@@ -1,24 +1,15 @@
-<div class="experience-list">
+<div class="experience-container">
   {% for item in site.data.experience %}
-  <article class="experience-item">
-    <div class="experience-mark" aria-hidden="true">
-      {% if item.logo %}
-      <img src="{{ item.logo | relative_url }}" alt="">
-      {% else %}
-      <span>{{ item.initials }}</span>
-      {% endif %}
-    </div>
-    <div class="experience-content">
-      <div class="experience-heading">
-        <div>
-          <h3>{{ item.lab }}</h3>
-          <p class="experience-institution">{{ item.institution }}</p>
-        </div>
-        <time>{{ item.period }}</time>
-      </div>
-      <p class="experience-advisor">Advised by <a href="{{ item.advisor_url }}" target="_blank" rel="noopener">{{ item.advisor }}</a></p>
+  <article class="experience-card">
+    {% if item.logo %}
+    <img src="{{ item.logo | relative_url }}" alt="{{ item.institution_name }} logo" class="experience-logo">
+    {% endif %}
+    <div class="experience-info">
+      <strong>{{ item.institution_name }}</strong><br>
+      <em>{{ item.period }}</em><br>
+      {{ item.lab }} research advised by <a href="{{ item.advisor_url }}" target="_blank" rel="noopener"><em>{{ item.advisor }}</em></a>
       {% if item.summary %}
-      <p class="experience-summary">{{ item.summary }}</p>
+      <br><span class="experience-summary">{{ item.summary }}</span>
       {% endif %}
     </div>
   </article>

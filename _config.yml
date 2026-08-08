@@ -4,6 +4,8 @@ position: Research Student
 affiliation: South China University of Technology
 affiliation_link: https://www.scut.edu.cn/en/
 email: shiyi20060618@gmail.com
+bio: Research student at SCUT working on embodied intelligence and robotic learning.
+location: Guangzhou, China
 
 # Search Engine Optimization (SEO)
 # The following information is used to improve the website traffic from search engines, e.g., Google.
@@ -21,13 +23,13 @@ twitter:
 
 # Images (e.g., your profile picture and your website's favicon) 
 # "favicon" and "favicon_dark" are used for the light and dark modes, respectively. 
-avatar: ./assets/img/avatar.png
+avatar: ./assets/img/avatar.webp
 favicon: ./assets/img/favicon.png
 favicon_dark: ./assets/img/favicon-dark.png
 
 # Footnote
 # You may use the option to disable the footnote, "Powered by Jekyll and Minimal Light theme."
-enable_footnote: true
+enable_footnote: false
 
 # Auto Dark Mode
 # You may use the option to disable the automatic dark theme
@@ -55,5 +57,6 @@ exclude:
   - README_zh_Hant.md
   - README_de.md
   - LICENSE
+  - THIRD_PARTY_NOTICES.md
   - minimal-light.gemspec
   - html_source_file/

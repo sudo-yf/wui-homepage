@@ -1,5 +1,6 @@
 - lab: RAPID Lab
   institution: SLAI
+  institution_name: Shenzhen Loop Area Institute
   period: 2026.07 - Present
   advisor: Cheng Hui
   advisor_url: https://cse.sysu.edu.cn/en/teacher/ChengHui
@@ -10,6 +11,7 @@
 
 - lab: MIAA Lab
   institution: SCUT
+  institution_name: South China University of Technology
   period: 2025.11 - 2026.05
   advisor: Huiping Zhuang
   advisor_url: https://zhuanghp.github.io/

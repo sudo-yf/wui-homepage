@@ -2,36 +2,28 @@
 layout: homepage
 ---
 
-<div class="intro-block">
-  <p class="eyebrow">Robotics · Embodied Intelligence</p>
-  <h2 class="intro-title">Learning how intelligent systems perceive, reason, and act.</h2>
-  <p>I am a research student interested in embodied intelligence, robotic learning, and machine learning. My current work explores how learning systems can operate reliably in complex physical environments.</p>
-</div>
+<h1 class="main-heading">Hi there <span aria-hidden="true">&#128075;</span> Welcome to my Homepage!</h1>
 
-## Research Experience
+Hi! I am **Yifan**, a research student at [South China University of Technology](https://www.scut.edu.cn/en/), working on embodied intelligence and robotic learning.
 
-{% include experience.html %}
+Feel free to reach out if you are interested in collaboration or potential opportunities.
 
 ## News
 
-<div class="news-list">
-  <div class="news-item">
-    <time>2026.07</time>
-    <p>Joined RAPID Lab at SLAI.</p>
-  </div>
-  <div class="news-item">
-    <time>2025.11</time>
-    <p>Joined MIAA Lab at SCUT.</p>
-  </div>
+<div class="news-box">
+  <ul class="news-list">
+    <li><span class="news-date"><em>2026.07</em></span> Joined RAPID Lab at SLAI.</li>
+    <li><span class="news-date"><em>2025.11</em></span> Joined MIAA Lab at SCUT.</li>
+  </ul>
 </div>
+
+## Experience
+
+{% include experience.html %}
 
 ## Research Interests
 
-<div class="interest-list" aria-label="Research interests">
-  <span>Embodied AI</span>
-  <span>Robotic Learning</span>
-  <span>Machine Learning</span>
-  <span>Autonomous Systems</span>
-</div>
+- **Embodied AI:** robotic perception, planning, and control
+- **Machine Learning:** representation learning and reliable autonomy
 
 <!-- Add selected publications and projects here when they are ready. -->
