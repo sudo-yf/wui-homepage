@@ -60,3 +60,6 @@ exclude:
   - THIRD_PARTY_NOTICES.md
   - minimal-light.gemspec
   - html_source_file/
+  - agent-harness/
+  - skills/
+  - .wui-cli/

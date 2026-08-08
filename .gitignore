@@ -7,3 +7,10 @@ Gemfile.lock
 .DS_Store
 .jekyll-cache
 git-update.sh
+.pytest_cache/
+.venv/
+.wui-cli/
+agent-harness/*.egg-info/
+agent-harness/.pytest_cache/
+agent-harness/.venv/
+agent-harness/**/__pycache__/

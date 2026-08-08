@@ -12,8 +12,9 @@ Feel free to reach out if you are interested in collaboration or potential oppor
 
 <div class="news-box">
   <ul class="news-list">
-    <li><span class="news-date"><em>2026.07</em></span> Joined RAPID Lab at SLAI.</li>
-    <li><span class="news-date"><em>2025.11</em></span> Joined MIAA Lab at SCUT.</li>
+    {% for item in site.data.news %}
+    <li><span class="news-date"><em>{{ item.date }}</em></span> {{ item.text }}</li>
+    {% endfor %}
   </ul>
 </div>
 
@@ -23,7 +24,10 @@ Feel free to reach out if you are interested in collaboration or potential oppor
 
 ## Research Interests
 
-- **Embodied AI:** robotic perception, planning, and control
-- **Machine Learning:** representation learning and reliable autonomy
+<ul>
+  {% for item in site.data.interests %}
+  <li><strong>{{ item.topic }}:</strong> {{ item.detail }}</li>
+  {% endfor %}
+</ul>
 
 <!-- Add selected publications and projects here when they are ready. -->
