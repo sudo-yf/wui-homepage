@@ -214,6 +214,13 @@ body.op-home {
   width: 220px;
 }
 
+.experience-logo--scut-wide {
+  filter: brightness(0) saturate(100%) invert(29%) sepia(37%) saturate(1335%) hue-rotate(171deg) brightness(89%) contrast(91%);
+  height: 70px;
+  object-fit: cover;
+  width: 220px;
+}
+
 .experience-info {
   color: #4d5155;
   font-family: "Segoe UI", sans-serif;
@@ -306,6 +313,11 @@ body.op-home {
 
   .experience-logo--wide {
     height: auto;
+    width: 132px;
+  }
+
+  .experience-logo--scut-wide {
+    height: 42px;
     width: 132px;
   }
 }
