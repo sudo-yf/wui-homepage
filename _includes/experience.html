@@ -7,7 +7,7 @@
     <div class="experience-info">
       <strong>{{ item.institution_name }}</strong><br>
       <em>{{ item.period }}</em><br>
-      {{ item.lab }} research advised by <a href="{{ item.advisor_url }}" target="_blank" rel="noopener"><em>{{ item.advisor }}</em></a>
+      {{ item.role }}, {{ item.lab }}; {{ item.relationship }}: <a href="{{ item.advisor_url }}" target="_blank" rel="noopener"><em>{{ item.advisor }}</em></a>
       {% if item.summary %}
       <br><span class="experience-summary">{{ item.summary }}</span>
       {% endif %}
