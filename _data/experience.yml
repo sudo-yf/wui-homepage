@@ -6,7 +6,8 @@
   advisor_url: https://cse.sysu.edu.cn/en/teacher/ChengHui
   summary:
   initials: RAPID
-  logo: /assets/img/slai-mark.png
+  logo: /assets/img/slai-logo.png
+  logo_variant: wide
   logo_source: https://www.slai.edu.cn/sites/default/files/2026-03/%E9%A6%96%E9%A1%B5logo_black.png
 
 - lab: MIAA Lab

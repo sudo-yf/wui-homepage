@@ -2,7 +2,7 @@
   {% for item in site.data.experience %}
   <article class="experience-card">
     {% if item.logo %}
-    <img src="{{ item.logo | relative_url }}" alt="{{ item.institution_name }} logo" class="experience-logo">
+    <img src="{{ item.logo | relative_url }}" alt="{{ item.institution_name }} logo" class="experience-logo{% if item.logo_variant %} experience-logo--{{ item.logo_variant }}{% endif %}">
     {% endif %}
     <div class="experience-info">
       <strong>{{ item.institution_name }}</strong><br>

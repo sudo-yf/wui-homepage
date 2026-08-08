@@ -209,6 +209,11 @@ body.op-home {
   width: 64px;
 }
 
+.experience-logo--wide {
+  height: auto;
+  width: 220px;
+}
+
 .experience-info {
   color: #4d5155;
   font-family: "Segoe UI", sans-serif;
@@ -297,5 +302,10 @@ body.op-home {
     height: 52px;
     margin-right: 14px;
     width: 52px;
+  }
+
+  .experience-logo--wide {
+    height: auto;
+    width: 132px;
   }
 }
