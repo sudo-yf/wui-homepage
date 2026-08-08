@@ -5,7 +5,8 @@
   advisor_url: https://cse.sysu.edu.cn/en/teacher/ChengHui
   summary:
   initials: RAPID
-  logo:
+  logo: /assets/img/slai-mark.png
+  logo_source: https://www.slai.edu.cn/sites/default/files/2026-03/%E9%A6%96%E9%A1%B5logo_black.png
 
 - lab: MIAA Lab
   institution: SCUT
@@ -14,4 +15,5 @@
   advisor_url: https://zhuanghp.github.io/
   summary:
   initials: MIAA
-  logo:
+  logo: /assets/img/scut-emblem.png
+  logo_source: https://www.scut.edu.cn/new/9017/list.htm
