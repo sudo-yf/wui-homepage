@@ -1,14 +1,14 @@
 - lab: RAPID Lab
   institution: SLAI
   institution_name: Shenzhen Loop Area Institute
-  period: 2026.07 - Present
+  period: 2026.07.20 - Present
   advisor: Cheng Hui
   advisor_url: https://cse.sysu.edu.cn/en/teacher/ChengHui
   role: Research Assistant (RA)
   relationship: Supervisor
   summary:
   initials: RAPID
-  logo: /assets/img/slai-logo.png
+  logo: /assets/img/slai-logo-balanced.png
   logo_variant: wide
   logo_source: https://www.slai.edu.cn/sites/default/files/2026-03/%E9%A6%96%E9%A1%B5logo_black.png
 
@@ -22,6 +22,6 @@
   relationship: Academic Advisor
   summary:
   initials: MIAA
-  logo: /assets/img/scut-horizontal-logo.png
+  logo: /assets/img/scut-logo-trimmed.png
   logo_variant: scut-wide
   logo_source: https://www.scut.edu.cn/_upload/site/01/3b/315/logo.png

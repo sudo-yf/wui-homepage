@@ -2,18 +2,28 @@
 layout: homepage
 ---
 
-<h1 class="main-heading">Hi there <span aria-hidden="true">&#128075;</span> Welcome to my Homepage!</h1>
+<p class="section-label">About</p>
 
-Hi! I am **Yifan**, a research student at [South China University of Technology](https://www.scut.edu.cn/en/), working on embodied intelligence and robotic learning.
-
-Feel free to reach out if you are interested in collaboration or potential opportunities.
+<div class="about-row">
+  <div class="profile-sidebar">
+    {% if site.avatar %}<div class="profile-avatar"><img src="{{ site.avatar }}" alt="Portrait of {{ site.title }}" /></div>{% endif %}
+    <div class="profile-contact" aria-label="Contact links">
+      <a href="{{ site.github_link }}" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:{{ site.email }}">gmail</a>
+    </div>
+  </div>
+  <div class="about-intro">
+    <p>Hi! I am <strong>{{ site.title }}</strong>, a research student at <a href="{{ site.affiliation_link }}">{{ site.affiliation }}</a>, working on <span class="keyword">embodied intelligence</span> and <span class="keyword">robotic learning</span>.</p>
+    <p>Feel free to reach out if you are interested in collaboration or potential opportunities.</p>
+  </div>
+</div>
 
 ## News
 
 <div class="news-box">
   <ul class="news-list">
     {% for item in site.data.news %}
-    <li><span class="news-date"><em>{{ item.date }}</em></span> {{ item.text }}</li>
+    <li><span class="news-date"><em>{{ item.date }}</em></span><span class="news-brand"><img src="{{ item.logo | relative_url }}" alt="{{ item.logo_name }}" width="72" height="28" loading="lazy" decoding="async"></span><span class="news-text">{{ item.text }}</span></li>
     {% endfor %}
   </ul>
 </div>

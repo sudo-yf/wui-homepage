@@ -33,28 +33,21 @@
     <link rel="stylesheet" href="./assets/css/style-no-dark-mode.css">
     <link rel="stylesheet" href="./assets/css/publications-no-dark-mode.css">
     {% endif %}
-    <link rel="stylesheet" href="{{ '/assets/css/home.css?v=20260809-3' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/home.css?v=20260917-47' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/robot-companion.css?v=44' | relative_url }}">
 
   </head>
   <body class="op-home">
+    <div class="robot-companion" aria-hidden="true"></div>
     <div class="wrapper">
-      <header class="profile-sidebar">
-        {% if site.avatar %}
-        <div class="profile-avatar">
-          <img src="{{ site.avatar }}" alt="Portrait of {{ site.title }}" />
+      <div class="home-hero">
+        <div class="hero-identity">
+          <h1>{{ site.title }}</h1>
+          <p>Embodied intelligence &amp; robotic learning.</p>
         </div>
-        {% endif %}
-
-        <h1 class="profile-name">{{ site.title }}</h1>
-        <p class="profile-bio">{{ site.bio }}</p>
-        <ul class="profile-links">
-          <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>{{ site.location }}</span></li>
-          <li><i class="fa-solid fa-building-columns" aria-hidden="true"></i><a href="{{ site.affiliation_link }}" target="_blank" rel="noopener">{{ site.affiliation }}</a></li>
-          <li><i class="fa-solid fa-envelope" aria-hidden="true"></i><a href="mailto:{{ site.email }}">Email</a></li>
-          <li><i class="fa-brands fa-github" aria-hidden="true"></i><a href="{{ site.github_link }}" target="_blank" rel="noopener">GitHub</a></li>
-        </ul>
-      </header>
+      </div>
       <section class="homepage-content">
+
 
       {{ content }}
 
@@ -65,11 +58,11 @@
       {% endif %}
 
       </section>
-      <footer>
-        
-      </footer>
     </div>
     <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+    <script type="module" src="{{ '/assets/js/page-interactions.js?v=45' | relative_url }}"></script>
+    <script type="importmap">{"imports":{"three":"{{ '/assets/js/vendor/three/three.module.min.js' | relative_url }}"}}</script>
+    <script type="module" src="{{ '/assets/js/robot-companion.js?v=46' | relative_url }}"></script>
     {% if site.google_analytics %}
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

@@ -1,16 +1,20 @@
 <div class="experience-container">
   {% for item in site.data.experience %}
   <article class="experience-card">
+    <div class="experience-heading">
     {% if item.logo %}
-    <img src="{{ item.logo | relative_url }}" alt="{{ item.institution_name }} logo" class="experience-logo{% if item.logo_variant %} experience-logo--{{ item.logo_variant }}{% endif %}">
+    <img src="{{ item.logo | relative_url }}" alt="{{ item.institution_name }} logo" width="154" height="48" loading="lazy" decoding="async" class="experience-logo{% if item.logo_variant %} experience-logo--{{ item.logo_variant }}{% endif %}">
     {% endif %}
+    </div>
     <div class="experience-info">
-      <strong>{{ item.institution_name }}</strong><br>
-      <em>{{ item.period }}</em><br>
-      {{ item.role }}, {{ item.lab }}; {{ item.relationship }}: <a href="{{ item.advisor_url }}" target="_blank" rel="noopener"><em>{{ item.advisor }}</em></a>
-      {% if item.summary %}
-      <br><span class="experience-summary">{{ item.summary }}</span>
-      {% endif %}
+      <div class="experience-details">
+        <p class="experience-role">{{ item.role }}</p>
+        <p class="experience-advisor">{{ item.relationship }}: <a href="{{ item.advisor_url }}" target="_blank" rel="noopener">{{ item.advisor }}</a></p>
+        {% if item.summary %}
+        <p class="experience-summary">{{ item.summary }}</p>
+        {% endif %}
+      </div>
+      <p class="experience-period">{{ item.period }}</p>
     </div>
   </article>
   {% endfor %}

@@ -1,0 +1,43 @@
+.robot-companion {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  contain: layout;
+}
+.op-home .robot-payload { position: fixed; left: 0; top: 0; z-index: 20; pointer-events: auto; max-width: 180px; margin: 0; padding: 6px; background: transparent; color: #282c2b; filter: drop-shadow(0 8px 5px #242c2926); border: 0; font: 600 22px "Avenir Next", sans-serif; transform-origin: top center; cursor: grab; }
+.robot-payload img { display: block; width: 64px; height: 64px; object-fit: cover; border-radius: 50%; }
+.robot-pickable { cursor: grab; transition: color .2s, opacity .2s; }
+.op-home .hero-identity .robot-pickable { pointer-events: auto; width: fit-content; margin-left: auto; margin-right: auto; }
+.robot-pickable:hover { color: var(--accent); }
+.robot-pickable:focus-visible { outline: 2px solid var(--robot-yellow); outline-offset: 5px; }
+.robot-picked { opacity: .35; }
+.robot-companion canvas { display: block; width: 100%; height: 100%; }
+.scene-palettes { position: fixed; right: 18px; bottom: 18px; z-index: 110; display: flex; align-items: center; gap: 14px; max-width: calc(100% - 36px); padding: 12px 14px; border: 1px solid #dfe2e0; border-radius: 6px; background: #fffffff5; box-shadow: 0 3px 16px #0000000d; }
+.scene-palettes output { width: 72px; font-size: 12px; color: #444a47; }
+.scene-palette-choices { display: flex; gap: 10px; }
+.scene-palette-choices button { flex: 0 0 28px; width: 28px; height: 28px; padding: 0; border: 2px solid white; border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px #d0d5d2; cursor: pointer; }
+.scene-palette-choices button[aria-pressed="true"] { box-shadow: 0 0 0 2px #353d38; }
+.scene-palette-choices button:focus-visible { outline: 2px solid #353d38; outline-offset: 4px; }
+.op-home .home-hero { height: min(540px, calc(100svh - 260px)); touch-action: pan-y; }
+.has-letter-playground .hero-identity { top: auto; bottom: 48px; width: 340px; }
+.has-letter-playground .hero-identity h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.has-letter-playground .hero-identity p { display: none; }
+.has-letter-playground .hero-contact { display: flex; position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); margin: 0; color: var(--muted); }
+.robot-controls { position: absolute; z-index: 3; bottom: 0; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+.robot-controls[hidden] { display: none; }
+.robot-controls button { width: 34px; height: 34px; padding: 0; border: 1px solid #d9dfd8; border-radius: 6px; background: #ffffff99; color: #526159; cursor: pointer; }
+.robot-controls button:hover { background: #ead589; color: #263e37; }
+.robot-controls button:focus-visible { outline: 2px solid #806000; outline-offset: 3px; }
+.home-hero.over-letter { cursor: grab; }
+.home-hero.is-dragging { cursor: grabbing; }
+@media (min-width: 761px) {
+  .op-home .home-hero { height: calc(100svh - 56px); min-height: 0; align-self: stretch; }
+  .op-home .robot-companion { width: 100%; height: 100%; inset: 0; }
+}
+@media (max-width: 760px) {
+  .op-home .home-hero { height: 185px; margin-inline: -28px; }
+  .has-letter-playground .hero-identity { width: calc(100% - 32px); bottom: 46px; }
+}
