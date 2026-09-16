@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createLetterPlayground } from './letter-playground.js?v=41';
+import { createLetterPlayground } from './letter-playground.js?v=52';
 import { mountPalettePicker } from './scene-palettes.js?v=46';
 import URDFLoader from './vendor/urdf-loader.js';
 import { STLLoader } from './vendor/stl-loader.js';
@@ -192,6 +192,28 @@ async function mountRobot(container) {
   let playground;
   let activeUntil = 0;
   let idleWake = 0;
+  const armSways = arms.map(() => ({ angle: 0, velocity: 0 }));
+  let lastEdge = -Infinity;
+  let edgeStrength = 0;
+  let lastWheelTime = 0;
+  function swingAtEdge(direction, speed) {
+    const now = performance.now();
+    if (reducedMotion.matches || !visible || hero.classList.contains('is-dragging')) return;
+    const strength = 0.08 + 0.72 * Math.sqrt(Math.min(speed / 3000, 1));
+    let impulse = strength;
+    if (now - lastEdge < 850) {
+      if (strength <= edgeStrength) return;
+      impulse = strength - edgeStrength;
+    } else {
+      lastEdge = now;
+    }
+    edgeStrength = strength;
+    armSways.forEach((sway, index) => {
+      if (!playground?.armBusy(index)) sway.velocity += direction * impulse * (index === 0 ? 1 : 0.78);
+    });
+    playground?.applyInertia(direction, impulse);
+    wake();
+  }
   function animate(now) {
     frame = 0;
     if (!visible || document.hidden) return;
@@ -207,10 +229,21 @@ async function mountRobot(container) {
     }
     scene.updateMatrixWorld(true);
     const moving = playground?.update(now, dt);
+    // Bend only upper joints; fixed bases and the camera never move.
+    armSways.forEach((sway, index) => {
+      const step = Math.min(dt, 1 / 30);
+      sway.velocity += (-(index === 0 ? 80 : 95) * sway.angle - 9 * sway.velocity) * step;
+      sway.angle = THREE.MathUtils.clamp(sway.angle + sway.velocity * step, -0.065, 0.065);
+      if (reducedMotion.matches || playground?.armBusy(index) || Math.abs(sway.angle) + Math.abs(sway.velocity) < 0.0004) sway.angle = sway.velocity = 0;
+      const arm = arms[index];
+      arm.model.setJointValues({ shoulder_lift: arm.current.shoulder_lift + sway.angle, elbow_flex: arm.current.elbow_flex - sway.angle * 0.65, wrist_flex: arm.current.wrist_flex + sway.angle * 0.3 });
+    });
     if (shadowMaterial.userData.shader) renderer.getDrawingBufferSize(shadowMaterial.userData.shader.uniforms.viewportSize.value);
     renderer.render(scene, camera);
+    for (const arm of arms) arm.model.setJointValues(arm.current);
+    scene.updateMatrixWorld(true);
     container.dataset.renderCount = String(renderer.info.render.frame);
-    if (moving || jointsMoving || now < activeUntil) frame = requestAnimationFrame(animate);
+    if (moving || jointsMoving || armSways.some(sway => sway.angle !== 0 || sway.velocity !== 0) || now < activeUntil) frame = requestAnimationFrame(animate);
     else if (playground?.nextWake() !== null) {
       idleWake = setTimeout(wake, Math.max(100, playground.nextWake() - performance.now()));
     }
@@ -318,6 +351,34 @@ async function mountRobot(container) {
   }
   document.addEventListener('pointermove', followPointer, { passive: true });
   document.addEventListener('pointerdown', followPointer, { passive: true });
+  const content = document.querySelector('.homepage-content');
+  const scrollOffsets = new WeakMap();
+  for (const element of [content, document.scrollingElement]) scrollOffsets.set(element, { top: element.scrollTop, time: performance.now() });
+  document.addEventListener('scroll', event => {
+    const element = event.target === document ? document.scrollingElement : event.target;
+    if (element !== content && element !== document.scrollingElement) return;
+    const now = performance.now();
+    const previous = scrollOffsets.get(element) ?? { top: element.scrollTop, time: now };
+    const delta = element.scrollTop - previous.top;
+    const speed = Math.abs(delta) / THREE.MathUtils.clamp((now - previous.time) / 1000, 0.016, 0.12);
+    scrollOffsets.set(element, { top: element.scrollTop, time: now });
+    const end = element.scrollHeight - element.clientHeight;
+    if (end <= 1) return;
+    if (delta < 0 && element.scrollTop <= 1) swingAtEdge(-1, speed);
+    if (delta > 0 && element.scrollTop >= end - 1) swingAtEdge(1, speed);
+  }, { capture: true, passive: true });
+  document.addEventListener('wheel', event => {
+    const now = performance.now();
+    const elapsed = THREE.MathUtils.clamp((now - lastWheelTime) / 1000, 0.016, 0.12);
+    lastWheelTime = now;
+    const element = matchMedia('(min-width: 761px)').matches ? content : document.scrollingElement;
+    const pixels = Math.abs(event.deltaY) * (event.deltaMode === 1 ? 18 : event.deltaMode === 2 ? element.clientHeight : 1);
+    const speed = pixels / elapsed;
+    const end = element.scrollHeight - element.clientHeight;
+    if (end <= 1) return;
+    if (event.deltaY < 0 && element.scrollTop <= 1) swingAtEdge(-1, speed);
+    if (event.deltaY > 0 && element.scrollTop >= end - 1) swingAtEdge(1, speed);
+  }, { passive: true });
   document.querySelector('.homepage-content').addEventListener('scroll', () => { updateLight(); wake(); }, { passive: true });
   if (avatar) new ResizeObserver(() => { updateLight(); wake(); }).observe(avatar);
   document.fonts.ready.then(() => { updateLight(); wake(); });

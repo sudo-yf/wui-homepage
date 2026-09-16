@@ -32,6 +32,7 @@ export async function createLetterPlayground({ scene, camera, container, arms, w
   let nextAction = Infinity;
   let nextAssignment = 0;
   let disposed = false;
+  let hoverPointer = null;
   const hero = document.querySelector('.home-hero');
   const armBounds = arms.map(arm => new THREE.Box3().setFromObject(arm.model, true));
   const wordCenterY = armBounds.reduce((sum, bounds) => sum + (bounds.min.y + bounds.max.y) / 2, 0) / arms.length;
@@ -68,7 +69,7 @@ export async function createLetterPlayground({ scene, camera, container, arms, w
       position: new CANNON.Vec3(home.x, home.y, home.z), sleepSpeedLimit: 0.035, sleepTimeLimit: 0.4 });
     world.addBody(body);
     body.angularFactor.set(0, 0, 1);
-    const item = { letter, mesh, body, home, size, heightScale };
+    const item = { letter, mesh, body, home, size, heightScale, sway: 0, swayVelocity: 0, waveAt: 0, waveStrength: 0, waveDirection: 1 };
     mesh.userData.item = item;
     items.push(item);
   }
@@ -200,7 +201,82 @@ export async function createLetterPlayground({ scene, camera, container, arms, w
     job.start = now;
     job.arm.graspFrame.getWorldPosition(job.from);
   }
+  document.addEventListener('pointermove', event => {
+    if (disposed || drag || event.buttons || event.pointerType !== 'mouse' || reducedMotion.matches) {
+      hoverPointer = null;
+      return;
+    }
+    setRay(event.clientX, event.clientY);
+    const point = ray.ray.intersectPlane(plane, new THREE.Vector3());
+    if (!point) return;
+    const now = performance.now();
+    const previous = hoverPointer;
+    hoverPointer = { point: point.clone(), x: event.clientX, y: event.clientY, time: now };
+    if (!previous || now - previous.time > 150 || event.target.closest('a, button')) return;
+    const elapsed = Math.max((now - previous.time) / 1000, 0.008);
+    const pixels = Math.hypot(event.clientX - previous.x, event.clientY - previous.y);
+    if (pixels < 0.5) return;
+    const speed = pixels / elapsed;
+    const movement = point.clone().sub(previous.point).setZ(0);
+    if (movement.lengthSq() < 1e-10) return;
+    const direction = movement.clone().normalize();
+    let affected = false;
+    for (const item of items) {
+      if (item.body.type !== CANNON.Body.DYNAMIC || jobs.some(task => task?.item === item)) continue;
+      // Sweep the full pointer segment so a fast pass cannot skip a letter.
+      const center = new THREE.Vector3().copy(item.body.position).setZ(point.z);
+      const closest = new THREE.Line3(previous.point, point).closestPointToPoint(center, true, new THREE.Vector3());
+      const offset = closest.sub(center).applyQuaternion(new THREE.Quaternion().copy(item.body.quaternion).invert());
+      const proximity = Math.max(Math.abs(offset.x) / (item.size.x / 2 + 0.018), Math.abs(offset.y) / (item.size.y / 2 + 0.018));
+      if (proximity >= 1) continue;
+      const influence = 1 - proximity;
+      if (speed > 260) {
+        item.swayVelocity = THREE.MathUtils.clamp(item.swayVelocity + Math.sign(direction.y || direction.x) * influence * 0.7, -1, 1);
+      } else {
+        const displacement = new THREE.Vector3().copy(item.body.position).sub(item.home).setZ(0);
+        if (displacement.length() > 0.065 && displacement.dot(direction) > 0) continue;
+        const velocity = THREE.MathUtils.clamp(movement.length() / elapsed, 0.14, 0.24) * Math.sqrt(influence);
+        item.body.wakeUp();
+        item.quietTime = 0;
+        item.body.applyImpulse(new CANNON.Vec3(direction.x * item.body.mass * velocity, direction.y * item.body.mass * velocity, 0));
+        const planarSpeed = Math.hypot(item.body.velocity.x, item.body.velocity.y);
+        if (planarSpeed > 0.24) {
+          item.body.velocity.x *= 0.24 / planarSpeed;
+          item.body.velocity.y *= 0.24 / planarSpeed;
+        }
+        nextAction = now + 1800;
+      }
+      affected = true;
+    }
+    if (affected) wake();
+  }, { passive: true });
+  document.documentElement.addEventListener('pointerleave', () => { hoverPointer = null; });
+  window.addEventListener('resize', () => { hoverPointer = null; });
+  const scrollPositions = new WeakMap();
+  for (const element of [document.scrollingElement, document.querySelector('.homepage-content')]) {
+    if (element) scrollPositions.set(element, element.scrollTop);
+  }
+  document.addEventListener('scroll', event => {
+    hoverPointer = null;
+    const element = event.target === document ? document.scrollingElement : event.target;
+    const previous = scrollPositions.get(element) ?? element.scrollTop;
+    const delta = element.scrollTop - previous;
+    scrollPositions.set(element, element.scrollTop);
+    if (disposed || reducedMotion.matches || drag || Math.abs(delta) < 1) return;
+    const strength = Math.min(Math.abs(delta) / 180, 0.55);
+    const direction = Math.sign(delta);
+    const now = performance.now();
+    for (const [index, item] of items.entries()) {
+      if (jobs.some(task => task?.item === item)) continue;
+      const order = direction > 0 ? items.length - 1 - index : index;
+      if (!item.waveAt) item.waveAt = now + order * 65;
+      item.waveStrength = Math.min(item.waveStrength + strength, 0.65);
+      item.waveDirection = direction;
+    }
+    wake();
+  }, { capture: true, passive: true });
   document.addEventListener('pointerdown', event => {
+    hoverPointer = null;
     if (event.target.closest('a, button') || event.button !== 0) return;
     const rect = container.getBoundingClientRect();
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) return;
@@ -210,6 +286,7 @@ export async function createLetterPlayground({ scene, camera, container, arms, w
     event.preventDefault();
     cancelJob();
     const item = hit.object.userData.item;
+    item.sway = item.swayVelocity = 0;
     ray.ray.intersectPlane(plane, hitPoint);
     drag = { item, id: event.pointerId, offset: new THREE.Vector3(item.body.position.x, item.body.position.y, 0).sub(hitPoint) };
     item.body.type = CANNON.Body.KINEMATIC;
@@ -247,6 +324,26 @@ export async function createLetterPlayground({ scene, camera, container, arms, w
 
   function update(now, dt) {
     if (disposed) return false;
+    for (const item of items) {
+      if (item.inertia && now < item.inertia.until && !reducedMotion.matches && !drag && !jobs.some(task => task?.item === item)) {
+        const fade = (item.inertia.until - now) / item.inertia.duration;
+        const force = item.body.mass * item.inertia.acceleration * fade;
+        item.body.applyForce(new CANNON.Vec3(item.inertia.direction.x * force, item.inertia.direction.y * force, 0));
+      } else item.inertia = null;
+      if (!item.waveAt || now < item.waveAt) continue;
+      if (!reducedMotion.matches && !drag && item.body.type === CANNON.Body.DYNAMIC && !jobs.some(task => task?.item === item)) {
+        const strength = item.waveStrength * (0.75 + Math.random() * 0.25);
+        item.swayVelocity = THREE.MathUtils.clamp(item.swayVelocity + item.waveDirection * strength, -0.8, 0.8);
+        const distance = Math.hypot(item.body.position.x - item.home.x, item.body.position.y - item.home.y);
+        if (distance < 0.018) {
+          item.body.wakeUp();
+          item.quietTime = 0;
+          item.body.applyImpulse(new CANNON.Vec3((Math.random() - 0.5) * 0.06 * item.body.mass * strength, item.waveDirection * 0.16 * item.body.mass * strength, 0));
+          nextAction = now + 2400;
+        }
+      }
+      item.waveAt = item.waveStrength = 0;
+    }
     if (enabled && !reducedMotion.matches && !drag && now > nextAction && now > nextAssignment) {
       nextAssignment = now + 500;
       for (const [index, arm] of arms.entries()) {
@@ -393,10 +490,20 @@ export async function createLetterPlayground({ scene, camera, container, arms, w
       }
       item.mesh.position.copy(item.body.position);
       item.mesh.quaternion.copy(item.body.quaternion);
+      if (reducedMotion.matches || drag?.item === item || jobs.some(task => task?.item === item)) {
+        item.sway = item.swayVelocity = 0;
+      } else {
+        const step = Math.min(dt, 1 / 30);
+        item.swayVelocity += (-100 * item.sway - 9 * item.swayVelocity) * step;
+        item.sway = THREE.MathUtils.clamp(item.sway + item.swayVelocity * step, -0.045, 0.045);
+        if (Math.abs(item.sway) + Math.abs(item.swayVelocity) < 0.0005) item.sway = item.swayVelocity = 0;
+        item.mesh.rotateX(item.sway);
+        item.mesh.position.z += Math.abs(Math.sin(item.sway)) * item.size.y / 2;
+      }
     }
     container.dataset.activity = drag ? 'dragging' : jobs.map(task => task ? `${task.push ? 'push' : 'tidy'}-${task.phase}` : 'idle').join(',');
     container.dataset.letters = JSON.stringify(items.map(item => ({ letter: item.letter, x: +item.body.position.x.toFixed(3), y: +item.body.position.y.toFixed(3), z: +item.body.position.z.toFixed(3), settled: !dirty(item) })));
-    return !!drag || !!job || items.some(item => item.body.sleepState !== CANNON.Body.SLEEPING);
+    return !!drag || !!job || items.some(item => item.body.sleepState !== CANNON.Body.SLEEPING || item.sway !== 0 || item.swayVelocity !== 0 || item.waveAt !== 0);
   }
   document.body.classList.add('has-letter-playground');
   container.dataset.playground = 'ready';
@@ -413,5 +520,25 @@ export async function createLetterPlayground({ scene, camera, container, arms, w
       mesh.children[0].material.color.set(palette.edge);
     }
   }
-  return { homeBounds, update, setPalette, nextWake() { return enabled && !reducedMotion.matches && Number.isFinite(nextAction) ? Math.max(nextAction, nextAssignment) : null; }, suspend() { release(); cancelJob(); }, dispose() { disposed = true; cancelJob(); } };
+  function applyInertia(direction, strength) {
+    if (disposed || reducedMotion.matches || drag) return;
+    const travel = new THREE.Vector3(0, -direction, 0).applyQuaternion(camera.quaternion).setZ(0).normalize();
+    for (const [index, item] of items.entries()) {
+      if (item.body.type !== CANNON.Body.DYNAMIC || jobs.some(task => task?.item === item)) continue;
+      const offset = new THREE.Vector3().copy(item.body.position).sub(item.home).setZ(0);
+      if (offset.length() > 0.08 && offset.dot(travel) > 0) continue;
+      const impulse = item.body.mass * strength * (0.6 + index * 0.045);
+      item.body.wakeUp();
+      item.quietTime = 0;
+      item.body.applyImpulse(new CANNON.Vec3(travel.x * impulse, travel.y * impulse, 0));
+      item.body.angularVelocity.z += direction * strength * (index % 2 ? -0.32 : 0.26);
+      const duration = 140 + strength * 120;
+      item.inertia = { direction: travel.clone(), acceleration: 8 + strength * (25 + index * 2), duration, until: performance.now() + duration };
+      item.body.velocity.x = THREE.MathUtils.clamp(item.body.velocity.x, -0.65, 0.65);
+      item.body.velocity.y = THREE.MathUtils.clamp(item.body.velocity.y, -0.65, 0.65);
+    }
+    nextAction = performance.now() + 3500;
+    wake();
+  }
+  return { homeBounds, update, setPalette, applyInertia, armBusy(index) { return !!jobs[index]; }, nextWake() { return enabled && !reducedMotion.matches && Number.isFinite(nextAction) ? Math.max(nextAction, nextAssignment) : null; }, suspend() { release(); cancelJob(); }, dispose() { disposed = true; cancelJob(); } };
 }
