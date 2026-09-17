@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createLetterPlayground } from './letter-playground.js?v=52';
+import { createLetterPlayground } from './letter-playground.js?v=55';
 import { mountPalettePicker } from './scene-palettes.js?v=46';
 import URDFLoader from './vendor/urdf-loader.js';
 import { STLLoader } from './vendor/stl-loader.js';
@@ -211,7 +211,6 @@ async function mountRobot(container) {
     armSways.forEach((sway, index) => {
       if (!playground?.armBusy(index)) sway.velocity += direction * impulse * (index === 0 ? 1 : 0.78);
     });
-    playground?.applyInertia(direction, impulse);
     wake();
   }
   function animate(now) {
