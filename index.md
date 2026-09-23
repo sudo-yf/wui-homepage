@@ -23,7 +23,7 @@ layout: homepage
 <div class="news-box">
   <ul class="news-list">
     {% for item in site.data.news %}
-    <li><span class="news-date"><em>{{ item.date }}</em></span><span class="news-brand"><img src="{{ item.logo | relative_url }}" alt="{{ item.logo_name }}" width="72" height="28" loading="lazy" decoding="async"></span><span class="news-text">{{ item.text }}</span></li>
+    <li><span class="news-date"><em>{{ item.date }}</em></span><span class="news-brand"><img src="{{ item.logo | relative_url }}" alt="{{ item.logo_name }}" width="72" height="28" loading="lazy" decoding="async"></span><span class="news-text"{% if item.title %} title="{{ item.title | escape }}"{% endif %}>{{ item.text }}</span></li>
     {% endfor %}
   </ul>
 </div>

@@ -4,9 +4,10 @@
   text: A paper I co-authored as <strong>second author</strong> is <strong>under review</strong> for <strong class="news-highlight">ICRA 2027</strong>.
 
 - date: "2026.08.23"
-  logo: /assets/img/public-safety-society-wordmark.png
+  logo: /assets/img/public-safety-society-wordmark-clear.png
   logo_name: China Association for Public Safety (organizer)
-  text: Led our team to win <strong class="news-highlight">National Third Prize</strong> at the 12th National College Student Safety Science and Engineering Practice and Innovation Competition.
+  text: Led our team to win <strong class="news-highlight">National Third Prize</strong> in the 12th national safety innovation contest.
+  title: 12th National College Student Safety Science and Engineering Practice and Innovation Competition
 
 - date: "2026.08"
   logo: /assets/img/neurips-logo.webp
